@@ -262,28 +262,37 @@ public class SliderLayout extends RelativeLayout {
         checkStartAutoCycle(delay, duration, autoRecover);
     }
 
-    public void checkStartAutoCycle(long delay, long duration, boolean autoRecover){
+    private void checkStartAutoCycle(long delay, long duration, boolean autoRecover){
+        PagerIndicator pagerIndicator = getPagerIndicator();
         if(mSliderAdapter.getCount() < 2){
+            if(pagerIndicator != null){
+                pagerIndicator.setVisibility(INVISIBLE);
+            }
             stopAutoCycle();
-        }else if(mAutoCycle){
-            recoverCycle();
-        } else {
-            if (mCycleTimer != null) mCycleTimer.cancel();
-            if (mCycleTask != null) mCycleTask.cancel();
-            if (mResumingTask != null) mResumingTask.cancel();
-            if (mResumingTimer != null) mResumingTimer.cancel();
-            mSliderDuration = duration;
-            mCycleTimer = new Timer();
-            mAutoRecover = autoRecover;
-            mCycleTask = new TimerTask() {
-                @Override
-                public void run() {
-                    mh.sendEmptyMessage(0);
-                }
-            };
-            mCycleTimer.schedule(mCycleTask, delay, mSliderDuration);
-            mCycling = true;
-            mAutoCycle = true;
+        }else {
+            if(pagerIndicator != null){
+                pagerIndicator.setVisibility(VISIBLE);
+            }
+            if(mAutoCycle){
+                recoverCycle();
+            } else {
+                if (mCycleTimer != null) mCycleTimer.cancel();
+                if (mCycleTask != null) mCycleTask.cancel();
+                if (mResumingTask != null) mResumingTask.cancel();
+                if (mResumingTimer != null) mResumingTimer.cancel();
+                mSliderDuration = duration;
+                mCycleTimer = new Timer();
+                mAutoRecover = autoRecover;
+                mCycleTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        mh.sendEmptyMessage(0);
+                    }
+                };
+                mCycleTimer.schedule(mCycleTask, delay, mSliderDuration);
+                mCycling = true;
+                mAutoCycle = true;
+            }
         }
     }
 
