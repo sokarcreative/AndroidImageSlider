@@ -229,7 +229,7 @@ public class SliderLayout extends RelativeLayout {
             mIndicator.destroySelf();
         }
         mIndicator = indicator;
-        mIndicator.setIndicatorVisibility(mIndicatorVisibility);
+        mIndicator.setIndicatorVisibility((mSliderAdapter.getCount() < 2) ? PagerIndicator.IndicatorVisibility.Invisible : PagerIndicator.IndicatorVisibility.Visible);
         mIndicator.setViewPager(mViewPager);
         mIndicator.redraw();
     }
