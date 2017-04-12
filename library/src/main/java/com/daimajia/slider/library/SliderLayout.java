@@ -343,6 +343,9 @@ public class SliderLayout extends RelativeLayout {
         }
         mAutoCycle = false;
         mCycling = false;
+        if(mSliderAdapter.getCount() < 2){
+            getPagerIndicator().setVisibility(INVISIBLE);
+        }
     }
 
     /**
