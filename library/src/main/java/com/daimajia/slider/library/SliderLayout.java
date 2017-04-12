@@ -236,16 +236,7 @@ public class SliderLayout extends RelativeLayout {
 
     public <T extends BaseSliderView> void addSlider(T imageContent) {
         mSliderAdapter.addSlider(imageContent);
-        checkAutoCycle();
-    }
-
-    public void checkAutoCycle(){
-        if(mSliderAdapter.getCount() < 2){
-            stopAutoCycle();
-        }else{
-            if(mAutoCycle)
-                startAutoCycle(mSliderDuration, mSliderDuration, mAutoRecover);
-        }
+        checkStartAutoCycle(mSliderDuration, mSliderDuration, mAutoRecover);
     }
 
     private android.os.Handler mh = new android.os.Handler() {
@@ -257,8 +248,7 @@ public class SliderLayout extends RelativeLayout {
     };
 
     public void startAutoCycle() {
-        startAutoCycle(mSliderDuration, mSliderDuration, mAutoRecover);
-        checkAutoCycle();
+        checkStartAutoCycle(mSliderDuration, mSliderDuration, mAutoRecover);
     }
 
     /**
@@ -269,22 +259,32 @@ public class SliderLayout extends RelativeLayout {
      * @param autoRecover if recover after user touches the slider.
      */
     public void startAutoCycle(long delay, long duration, boolean autoRecover) {
-        if (mCycleTimer != null) mCycleTimer.cancel();
-        if (mCycleTask != null) mCycleTask.cancel();
-        if (mResumingTask != null) mResumingTask.cancel();
-        if (mResumingTimer != null) mResumingTimer.cancel();
-        mSliderDuration = duration;
-        mCycleTimer = new Timer();
-        mAutoRecover = autoRecover;
-        mCycleTask = new TimerTask() {
-            @Override
-            public void run() {
-                mh.sendEmptyMessage(0);
-            }
-        };
-        mCycleTimer.schedule(mCycleTask, delay, mSliderDuration);
-        mCycling = true;
-        mAutoCycle = true;
+        checkStartAutoCycle(delay, duration, autoRecover);
+    }
+
+    public void checkStartAutoCycle(long delay, long duration, boolean autoRecover){
+        if(mSliderAdapter.getCount() < 2){
+            stopAutoCycle();
+        }else if(mAutoCycle){
+            recoverCycle();
+        } else {
+            if (mCycleTimer != null) mCycleTimer.cancel();
+            if (mCycleTask != null) mCycleTask.cancel();
+            if (mResumingTask != null) mResumingTask.cancel();
+            if (mResumingTimer != null) mResumingTimer.cancel();
+            mSliderDuration = duration;
+            mCycleTimer = new Timer();
+            mAutoRecover = autoRecover;
+            mCycleTask = new TimerTask() {
+                @Override
+                public void run() {
+                    mh.sendEmptyMessage(0);
+                }
+            };
+            mCycleTimer.schedule(mCycleTask, delay, mSliderDuration);
+            mCycling = true;
+            mAutoCycle = true;
+        }
     }
 
     /**
@@ -660,7 +660,7 @@ public class SliderLayout extends RelativeLayout {
         if (getRealAdapter() != null) {
             getRealAdapter().removeSliderAt(position);
             mViewPager.setCurrentItem(mViewPager.getCurrentItem(), false);
-            checkAutoCycle();
+            checkStartAutoCycle(mSliderDuration, mSliderDuration, mAutoRecover);
         }
     }
 
