@@ -191,6 +191,9 @@ public class SliderLayout extends RelativeLayout {
         mViewPager.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                if(mSliderAdapter.getCount() < 2){
+                    return true;
+                }
                 int action = event.getAction();
                 switch (action) {
                     case MotionEvent.ACTION_UP:
@@ -233,6 +236,16 @@ public class SliderLayout extends RelativeLayout {
 
     public <T extends BaseSliderView> void addSlider(T imageContent) {
         mSliderAdapter.addSlider(imageContent);
+        checkAutoCycle();
+    }
+
+    public void checkAutoCycle(){
+        if(mSliderAdapter.getCount() < 2){
+            stopAutoCycle();
+        }else{
+            if(mAutoCycle)
+                startAutoCycle(mSliderDuration, mSliderDuration, mAutoRecover);
+        }
     }
 
     private android.os.Handler mh = new android.os.Handler() {
@@ -245,6 +258,7 @@ public class SliderLayout extends RelativeLayout {
 
     public void startAutoCycle() {
         startAutoCycle(mSliderDuration, mSliderDuration, mAutoRecover);
+        checkAutoCycle();
     }
 
     /**
@@ -646,6 +660,7 @@ public class SliderLayout extends RelativeLayout {
         if (getRealAdapter() != null) {
             getRealAdapter().removeSliderAt(position);
             mViewPager.setCurrentItem(mViewPager.getCurrentItem(), false);
+            checkAutoCycle();
         }
     }
 
