@@ -44,7 +44,7 @@ public class ChildAnimationExample implements BaseAnimationInterface {
 //                    0).setDuration(500);
 //            animator.start();
 //            new BounceInAnimator().animate(descriptionLayout);
-            new StandUpAnimator().animate();
+            new StandUpAnimator().animate(descriptionLayout);
         }
         Log.e(TAG,"onCurrentItemDisappear called");
     }
